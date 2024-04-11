@@ -1,0 +1,60 @@
+{{- if .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}-prometheus-rules
+  labels:
+    {{- range $key, $val := .Values.prometheus.rules.labels }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end}}
+    {{- include "charts.labels" . | nindent 4 }}
+spec:
+  groups:
+  - name: chaosmesh.rules.stresschaos
+    rules:
+    - record: chaosmesh:stresschaos:pod_cpu_usage_seconds_total:sum_irate
+      expr: |
+        sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate) by (namespace, pod, node) * on(namespace, pod) group_right(node) label_replace(
+          label_replace(
+            max by (exp_type, exp_name, exp_uuid, exported_pod, exported_namespace) (chaos_experiment),
+            "pod", "$1", "exported_pod", "(.*)"
+          ),
+          "namespace", "$1", "exported_namespace", "(.*)"
+        )
+    - record: chaosmesh:stresschaos:pod_memory_working_set_bytes
+      expr: |
+        sum(node_namespace_pod_container:container_memory_working_set_bytes) by (namespace, pod, node) * on(namespace, pod) group_right(node) label_replace(
+          label_replace(
+            max by (exp_type, exp_name, exp_uuid, exported_pod, exported_namespace) (chaos_experiment),
+            "pod", "$1", "exported_pod", "(.*)"
+          ),
+          "namespace", "$1", "exported_namespace", "(.*)"
+        )
+    - record: chaosmesh:stresschaos:pod_memory_rss
+      expr: |
+        sum(node_namespace_pod_container:container_memory_rss) by (namespace, pod, node) * on(namespace, pod) group_right(node) label_replace(
+          label_replace(
+            max by (exp_type, exp_name, exp_uuid, exported_pod, exported_namespace) (chaos_experiment),
+            "pod", "$1", "exported_pod", "(.*)"
+          ),
+          "namespace", "$1", "exported_namespace", "(.*)"
+        )
+    - record: chaosmesh:stresschaos:pod_memory_cache
+      expr: |
+        sum(node_namespace_pod_container:container_memory_cache) by (namespace, pod, node) * on(namespace, pod) group_right(node) label_replace(
+          label_replace(
+            max by (exp_type, exp_name, exp_uuid, exported_pod, exported_namespace) (chaos_experiment),
+            "pod", "$1", "exported_pod", "(.*)"
+          ),
+          "namespace", "$1", "exported_namespace", "(.*)"
+        )
+    - record: chaosmesh:stresschaos:pod_memory_swap
+      expr: |
+        sum(node_namespace_pod_container:container_memory_swap) by (namespace, pod, node) * on(namespace, pod) group_right(node) label_replace(
+          label_replace(
+            max by (exp_type, exp_name, exp_uuid, exported_pod, exported_namespace) (chaos_experiment),
+            "pod", "$1", "exported_pod", "(.*)"
+          ),
+          "namespace", "$1", "exported_namespace", "(.*)"
+        )
+{{- end }}

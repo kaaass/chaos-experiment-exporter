@@ -11,6 +11,23 @@ chaosMesh:
   # Service name of the Chaos Dashboard
   dashboardService: chaos-dashboard
 
+prometheus:
+  # Install prometheus rules to prometheus-operator
+  enabled: true
+
+  serviceMonitor:
+    # Labels for prometheus-operator discovering the ServiceMonitor
+    labels:
+      release: prometheus  # Default in kube-prometheus-stack
+
+    # Interval at which metrics should be scraped
+    interval: 30s
+  
+  rules:
+    # Labels for prometheus-operator discovering the PrometheusRule
+    labels:
+      release: prometheus  # Default in kube-prometheus-stack
+
 image:
   repository: ghcr.io/kaaass/chaos-experiment-exporter
   pullPolicy: IfNotPresent

@@ -1,0 +1,19 @@
+{{- if .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-service-monitor
+  labels:
+    {{- range $key, $val := .Values.prometheus.serviceMonitor.labels }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end}}
+    {{- include "charts.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - port: http
+    interval: {{ .Values.prometheus.serviceMonitor.interval }}
+    scheme: http
+  selector:
+    matchLabels:
+      {{- include "charts.selectorLabels" . | nindent 6 }}
+{{- end }}
