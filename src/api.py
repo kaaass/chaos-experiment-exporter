@@ -24,7 +24,7 @@ def get_access_token() -> str:
     # read sa token if env not specified
     sa_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
     if os.path.exists(sa_file):
-        with sa_file.open("r") as f:
+        with open(sa_file, "r") as f:
             return f.read()
 
     raise ValueError("API_ACCESS_TOKEN or service account must be configured")
