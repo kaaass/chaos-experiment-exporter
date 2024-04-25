@@ -64,23 +64,3 @@ def get_experiment(uid: str) -> dict:
 def get_common_config() -> dict:
     """Get common config of chaos-dashboard instance."""
     return request_api(API_GET_COMMON_CONFIG, "GET")
-
-
-def _test():
-    selector = {
-        "namespaces": ["my-namespace"],
-        "labelSelectors": {"app": "nginx"},
-        "annotationSelectors": {},
-    }
-    pods = list_pod(selector)
-    print(pods)
-
-    experiments = list_experiments()
-    print(experiments)
-
-    experiment = get_experiment(experiments[0]["uid"])
-    print(experiment)
-
-
-if __name__ == "__main__":
-    _test()
